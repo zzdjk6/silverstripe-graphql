@@ -18,11 +18,14 @@ use SilverStripe\GraphQL\Controller;
 use SilverStripe\GraphQL\Extensions\IntrospectionProvider;
 use SilverStripe\GraphQL\Manager;
 use SilverStripe\GraphQL\Scaffolding\StaticSchema;
+use SilverStripe\GraphQL\Tests\Fake\FakePersistedQuery;
 use SilverStripe\GraphQL\Tests\Fake\QueryCreatorFake;
 use SilverStripe\GraphQL\Tests\Fake\TypeCreatorFake;
 
 class ControllerTest extends SapphireTest
 {
+    protected $usesDatabase = true;
+
     public function setUp()
     {
         parent::setUp();
@@ -379,6 +382,41 @@ class ControllerTest extends SapphireTest
         $controller = Controller::create();
         $response = $controller->types(new HTTPRequest('GET', '/'));
         $this->assertEquals('{"uncle":"cheese"}', $response->getBody());
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testGetPersistedQuery()
+    {
+        $fake = new FakePersistedQuery();
+        $fakeQueryMapping = $fake->getPersistedQueryMappingString();
+
+        $configArr = [
+            [
+                'type'  => 'string',
+                'value' => $fakeQueryMapping
+            ],
+            [
+                'type'  => 'path',
+                'value' => $fake->getPersistedQueryMappingPath()
+            ]
+        ];
+
+        foreach ($configArr as $config) {
+            Config::modify()->set(Controller::class, 'persisted_query_mapping', $config);
+
+            /* @var $controller Controller */
+            $controller = Controller::create();
+            $reflection = new ReflectionClass($controller);
+            $method = $reflection->getMethod('getPersistedQueryFromID');
+            $method->setAccessible(true);
+
+            $expectMapping = array_flip(json_decode($fakeQueryMapping, true));
+            foreach ($expectMapping as $id => $query) {
+                $this->assertEquals($query, $method->invoke($controller, $id));
+            }
+        }
     }
 
     protected function getType(Manager $manager)
