@@ -12,6 +12,7 @@ use SilverStripe\Core\Injector\Injectable;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Error\Error;
 use GraphQL\Type\Definition\Type;
+use SilverStripe\GraphQL\PersistedQuery\PersistedQueryMappingProvider;
 use SilverStripe\GraphQL\Scaffolding\StaticSchema;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
@@ -365,6 +366,23 @@ class Manager
     public function getMember()
     {
         return $this->member ?: Security::getCurrentUser();
+    }
+
+    /**
+     * get query from persisted id, return null if not found
+     *
+     * @param $id
+     * @return string | null
+     */
+    public function getQueryFromPersistedID($id)
+    {
+        /** @var PersistedQueryMappingProvider $provider */
+        $provider = Injector::inst()->create(PersistedQueryMappingProvider::class);
+        $invertMapping = $provider->getReversedMapping();
+        if (!isset($invertMapping[$id])) {
+            return null;
+        }
+        return $invertMapping[$id];
     }
 
     /**
