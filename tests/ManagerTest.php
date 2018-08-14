@@ -11,6 +11,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\GraphQL\Manager;
 use SilverStripe\GraphQL\PersistedQuery\FileProvider;
+use SilverStripe\GraphQL\PersistedQuery\HTTPProvider;
 use SilverStripe\GraphQL\PersistedQuery\JSONStringProvider;
 use SilverStripe\GraphQL\PersistedQuery\PersistedQueryMappingProvider;
 use SilverStripe\GraphQL\Tests\Fake\FakePersistedQuery;
@@ -185,7 +186,12 @@ class ManagerTest extends SapphireTest
             $this->assertEquals($query, $manager->getQueryFromPersistedID($id));
         }
 
-        // TODO: HTTPProvider
+        // HTTPProvider
+        Config::modify()->set(HTTPProvider::class, 'url_with_key', ['default' => $fake->getPersistedQueryMappingURL()]);
+        Injector::inst()->registerService(HTTPProvider::create(), PersistedQueryMappingProvider::class);
+        foreach ($expectMapping as $id => $query) {
+            $this->assertEquals($query, $manager->getQueryFromPersistedID($id));
+        }
     }
 
     protected function getType(Manager $manager)
