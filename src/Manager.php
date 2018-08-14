@@ -378,7 +378,7 @@ class Manager
     {
         /** @var PersistedQueryMappingProvider $provider */
         $provider = Injector::inst()->create(PersistedQueryMappingProvider::class);
-        $invertMapping = $provider->getReversedMapping();
+        $invertMapping = $provider->getInvertedMapping();
         if (!isset($invertMapping[$id])) {
             return null;
         }

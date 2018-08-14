@@ -63,7 +63,7 @@ class JSONStringProvider implements PersistedQueryMappingProvider
      * @param string $schemaKey
      * @return array
      */
-    public function getReversedMapping($schemaKey = 'default')
+    public function getInvertedMapping($schemaKey = 'default')
     {
         return array_flip($this->getMapping($schemaKey));
     }

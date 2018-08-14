@@ -22,5 +22,5 @@ interface PersistedQueryMappingProvider
      * @param string $schemaKey
      * @return array
      */
-    public function getReversedMapping($schemaKey = 'default');
+    public function getInvertedMapping($schemaKey = 'default');
 }
