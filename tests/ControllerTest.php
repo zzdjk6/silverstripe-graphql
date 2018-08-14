@@ -384,39 +384,9 @@ class ControllerTest extends SapphireTest
         $this->assertEquals('{"uncle":"cheese"}', $response->getBody());
     }
 
-    /**
-     * @throws \ReflectionException
-     */
-    public function testGetPersistedQuery()
+    public function testPersistedQuery()
     {
-        $fake = new FakePersistedQuery();
-        $fakeQueryMapping = $fake->getPersistedQueryMappingString();
-
-        $configArr = [
-            [
-                'type'  => 'string',
-                'value' => $fakeQueryMapping
-            ],
-            [
-                'type'  => 'path',
-                'value' => $fake->getPersistedQueryMappingPath()
-            ]
-        ];
-
-        foreach ($configArr as $config) {
-            Config::modify()->set(Controller::class, 'persisted_query_mapping', $config);
-
-            /* @var $controller Controller */
-            $controller = Controller::create();
-            $reflection = new ReflectionClass($controller);
-            $method = $reflection->getMethod('getPersistedQueryFromID');
-            $method->setAccessible(true);
-
-            $expectMapping = array_flip(json_decode($fakeQueryMapping, true));
-            foreach ($expectMapping as $id => $query) {
-                $this->assertEquals($query, $method->invoke($controller, $id));
-            }
-        }
+        // TODO: integration test
     }
 
     protected function getType(Manager $manager)

@@ -4,6 +4,7 @@
 namespace SilverStripe\GraphQL\PersistedQuery;
 
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * Class ConfigStringProvider
@@ -13,7 +14,7 @@ use SilverStripe\Core\Config\Configurable;
  */
 class JSONStringProvider implements PersistedQueryMappingProvider
 {
-    use Configurable;
+    use Configurable, Injectable;
 
     /**
      * Example:
@@ -48,7 +49,7 @@ class JSONStringProvider implements PersistedQueryMappingProvider
         }
 
         $mapping = $mappingWithKey[$schemaKey];
-        $result = json_decode($mapping);
+        $result = json_decode($mapping, true);
         if (!is_array($result)) {
             return [];
         }
@@ -64,6 +65,6 @@ class JSONStringProvider implements PersistedQueryMappingProvider
      */
     public function getReversedMapping($schemaKey = 'default')
     {
-        return array_reverse($this->getMapping($schemaKey));
+        return array_flip($this->getMapping($schemaKey));
     }
 }

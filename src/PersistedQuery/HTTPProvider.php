@@ -2,7 +2,11 @@
 
 namespace SilverStripe\GraphQL\PersistedQuery;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * Class HTTPProvider
@@ -10,7 +14,7 @@ use SilverStripe\Core\Config\Configurable;
  */
 class HTTPProvider implements PersistedQueryMappingProvider
 {
-    use Configurable;
+    use Configurable, Injectable;
 
     /**
      * Example:
@@ -45,10 +49,20 @@ class HTTPProvider implements PersistedQueryMappingProvider
         }
 
         $url = trim($urlWithKey[$schemaKey]);
+        $request = new Request('GET', $url);
+        $client = new Client();
+        try {
+            $response = $client->send($request, ['timeout' => 5]);
+            $contents = trim($response->getBody()->getContents());
+        } catch (\RuntimeException $e) {
+            user_error($e->getMessage(), E_USER_WARNING);
+            return [];
+        } catch (GuzzleException $e) {
+            user_error($e->getMessage(), E_USER_WARNING);
+            return [];
+        }
 
-        // TODO: replace this with GuzzleHttp
-        $contents = trim(file_get_contents($url));
-        $result = json_decode($contents);
+        $result = json_decode($contents, true);
         if (!is_array($result)) {
             return [];
         }
@@ -64,6 +78,6 @@ class HTTPProvider implements PersistedQueryMappingProvider
      */
     public function getReversedMapping($schemaKey = 'default')
     {
-        return array_reverse($this->getMapping($schemaKey));
+        return array_flip($this->getMapping($schemaKey));
     }
 }

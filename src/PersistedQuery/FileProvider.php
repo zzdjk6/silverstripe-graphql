@@ -3,6 +3,7 @@
 namespace SilverStripe\GraphQL\PersistedQuery;
 
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * Class FileProvider
@@ -10,7 +11,7 @@ use SilverStripe\Core\Config\Configurable;
  */
 class FileProvider implements PersistedQueryMappingProvider
 {
-    use Configurable;
+    use Configurable, Injectable;
 
     /**
      * Example:
@@ -46,7 +47,7 @@ class FileProvider implements PersistedQueryMappingProvider
 
         $path = trim($pathWithKey[$schemaKey]);
         $contents = trim(file_get_contents($path));
-        $result = json_decode($contents);
+        $result = json_decode($contents, true);
         if (!is_array($result)) {
             return [];
         }
@@ -62,6 +63,6 @@ class FileProvider implements PersistedQueryMappingProvider
      */
     public function getReversedMapping($schemaKey = 'default')
     {
-        return array_reverse($this->getMapping($schemaKey));
+        return array_flip($this->getMapping($schemaKey));
     }
 }
