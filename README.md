@@ -1299,7 +1299,6 @@ SilverStripe\GraphQL\Manager:
                   OnlyToday: Boolean
                 resolver: MyProject\CommentResolver
             ##...
-          ##...
 ```
 
 **... Or with code**
