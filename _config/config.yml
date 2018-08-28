@@ -7,8 +7,6 @@ SilverStripe\Core\Injector\Injector:
     class: SilverStripe\GraphQL\Scaffolding\Util\StringTypeParser
   SilverStripe\GraphQL\Scaffolding\Interfaces\TypeParserInterface.array:
     class: SilverStripe\GraphQL\Scaffolding\Util\ArrayTypeParser
-  SilverStripe\GraphQL\PersistedQuery\PersistedQueryMappingProvider:
-    class: SilverStripe\GraphQL\PersistedQuery\JSONStringProvider
   SilverStripe\GraphQL\PersistedQuery\HTTPProvider:
     constructor:
       httpClient: %$SilverStripe\GraphQL\PersistedQuery\GuzzleHTTPClient
