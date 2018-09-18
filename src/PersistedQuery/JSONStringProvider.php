@@ -78,6 +78,7 @@ class JSONStringProvider implements PersistedQueryMappingProvider
     /**
      * @param array $mapping
      * @return $this
+     * @throws \InvalidArgumentException
      */
     public function setSchemaMapping(array $mapping)
     {

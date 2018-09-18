@@ -9,11 +9,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\GraphQL\Manager;
-use SilverStripe\GraphQL\PersistedQuery\FileProvider;
-use SilverStripe\GraphQL\PersistedQuery\HTTPProvider;
-use SilverStripe\GraphQL\PersistedQuery\JSONStringProvider;
 use SilverStripe\GraphQL\PersistedQuery\PersistedQueryMappingProvider;
-use SilverStripe\GraphQL\Tests\Fake\FakePersistedQuery;
 use SilverStripe\GraphQL\Tests\Fake\MutationCreatorFake;
 use SilverStripe\GraphQL\Tests\Fake\QueryCreatorFake;
 use SilverStripe\GraphQL\Tests\Fake\TypeCreatorFake;
@@ -218,20 +214,17 @@ class ManagerTest extends SapphireTest
 
     public function testGetPersistedQueryByID()
     {
-        $mapper = $this->getMockBuilder(PersistedQueryMappingProvider::class)
-            ->setMethods(['getByID', 'getQueryMapping', 'setSchemaMapping', 'getSchemaMapping'])
-            ->getMock();
-        $mapper->expects($this->once())
+        $providerStub = $this->createMock(PersistedQueryMappingProvider::class);
+        $providerStub
             ->method('getByID')
             ->with(
                 $this->equalTo('someID'),
                 $this->equalTo('default')
             )
             ->willReturn('someQuery');
-        Injector::inst()->registerService($mapper, PersistedQueryMappingProvider::class);
+        Injector::inst()->registerService($providerStub, PersistedQueryMappingProvider::class);
 
         $manager = new Manager();
-
         $result = $manager->getQueryFromPersistedID('someID');
         $this->assertEquals('someQuery', $result);
     }
